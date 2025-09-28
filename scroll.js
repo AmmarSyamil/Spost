@@ -1,5 +1,5 @@
 const data = document
-
+console.log("Spost run")
 // Configurable stuff!
 const MAX_SCROLL_TIME = 5 // Total time per session before self destruct, in minutes
 const CHECK_SCROLL_DIFF_INTERVAL = 2 // Time interval to check scroll diff, in minutes
@@ -9,6 +9,8 @@ const DIFF_KINDA_BAD = 6000 // Classification threshold for kinda bad (ms)
 const AFK_THRESHOLD = 60 // AFK detection threshold in seconds
 const DEBOUNCE_MS = 500 // Debounce for reel change detection (ms)
 
+
+//Deprecated function
 function scroll_home(data = document) {
     const check_scroll_home = new MutationObserver(mutations => {
         for (const mutation of mutations) {
@@ -37,7 +39,7 @@ function scroll_home(data = document) {
         subtree: true
     })
 }
-
+// Data structure
 let initial_open = new Date();
 const scroll_data = new Map([
   ["scroll_time", 0],
@@ -51,10 +53,8 @@ const scroll_data = new Map([
 ])
 
 
-console.log("scroll js sybau works")
-// Sybau, focus reels
 function scroll_reels(data = document) {
-    console.log("main fucntion run sybau")
+    // console.log("main fucntion run sybau")
     const requiredClasses = ["x1lliihq", "x5yr21d", "xh8yej3"];
     const srcPrefix = "blob:https://www.instagram.com/";
     const lastY = new WeakMap();
@@ -108,14 +108,13 @@ function scroll_reels(data = document) {
 
         const middle = getMiddleReel();
         if (!middle) {
-            console.log("cant find middle scrren sybau")
+            // console.log("cant find middle scrren sybau")
         };
         const y = middle.getBoundingClientRect().top || 0;
         const now = Date.now();
         if (lastMiddle === middle) {
             const prevY = lastY.get(middle);
             if (prevY !== undefined && Math.abs(y - prevY) > 8) {
-                // console.log("Middle re?el scrolled: sybau", serialize(middle), "from", prevY, "to", y);
                 // actualy_usecase("mibombo")
             }
             lastY.set(middle, y);
@@ -123,7 +122,6 @@ function scroll_reels(data = document) {
             // console.log("not sybau nic")
             is_same_reel_for_reel_check_interval=false
             if (now - lastMiddleChangeTime > DEBOUNCE_MS) {
-                // Only log and run usecase if debounce time has passed
                 // console.log("sybau idk what is this st")
                 actualy_usecase()
                 lastMiddleChangeTime = now;
@@ -133,13 +131,6 @@ function scroll_reels(data = document) {
         lastMiddle = middle;
     }
 
-    // Initial scan
-    // const middle = getMiddleReel();
-    // if (middle) {
-    //     lastY.set(middle, middle.getBoundingClientRect().top || 0);
-    //     lastMiddle = middle;
-    //     console.log("Initial middle reel:", serialize(middle));
-    // }
 
     pollInterval = setInterval(() => {
         try {
@@ -151,27 +142,6 @@ function scroll_reels(data = document) {
             console.error("scroll_reels poll error:", e);
         }
     }, 300);
-
-    // const observer = new MutationObserver(mutations => {
-    //     for (const m of mutations) {
-    //         if (m.type === "childList") {
-    //             for (const n of m.addedNodes) {
-    //                 if (n.tagName === "VIDEO" && isTargetVideo(n)) {
-    //                     console.log("Video added:", serialize(n));
-    //                 }
-    //             }
-    //             for (const n of m.removedNodes) {
-    //                 if (n.tagName === "VIDEO" && isTargetVideo(n)) {
-    //                     console.log("Video removed:", serialize(n));
-    //                 }
-    //             }
-    //         }
-    //     }
-    // });
-    // observer.observe(data, {
-    //     childList: true,
-    //     subtree: true
-    // });
 
     return {
         stop() {
@@ -185,7 +155,7 @@ function scroll_reels(data = document) {
     };
 }
 
-console.log("run sybau");
+// console.log("run sybau");
 const tes = scroll_reels(document);
 
 let previus_scroll = new Date();
@@ -234,17 +204,7 @@ function actualy_usecase() {
             scroll_data.get("scroll_diff").get("classification").push(current_diff_classification)
             all_diff_classification.push(current_diff_classification)
         }
-        
-        // if(scroll_data.get("scroll_diff").get("values").length % 5 == 0 && scroll_data.get("scroll_diff").get("values") != 0) {
-            
-        //     console.log("sybau 5 reals pass and u still like this??")
-        //     const session_classification = Math.abs(scroll_data.get("scroll_diff").get("classification").reduce((a, b) => a + b, 0)/scroll_data.get("scroll_diff").get("classification").length)
-            
-        //     console.log(scroll_data.get("scroll_time"), "sybau this is your total time")
-        // }
-        
-        // console.log(scroll_data.get("scroll_time"), "tes tes sybau")
-        
+
         previus_scroll = current_scroll}
     }catch (error) {console.error("sybau errror", error)}
 }
@@ -287,10 +247,7 @@ function actualy_usecase_always() {
         if (indices_time_data.length > 0) {
             const last_window_data = indices_time_data.map(idx => scroll_data.get("scroll_diff").get("classification")[idx]);
             const avg_last_window_data = last_window_data.reduce((a, b) => a + b, 0) / last_window_data.length;
-            console.log(avg_last_window_data, "sybau")
-            // FUNCTION HERE TODO SOMETHINGS
-            // console.log(avg_last_window_data, "sybau heres your alst 5 minutes data")
-            // console.log(last_window_data, "sybau heres your idk what isit")
+
             if (avg_last_window_data<=2){
                 // console.log("chill out ur so friking braintoted sybau")
             } else if (avg_last_window_data<=3) {
@@ -303,29 +260,19 @@ function actualy_usecase_always() {
         last_interval_minute = scroll_time_minutes
         }
 
-    // if (scroll_data.get("scroll_time")/60 % 5 ==0 && scroll_data.get("scroll_time") != 0) {
-    //     console.log("stop niga ur brainroted")
-    // }
-
-    // scroll_data.get("scroll_diff").get("values").length
-    // i dont think this is imprtant, like nig, so no need a functio for functionality
+    // Deprecated
     if (scroll_data.get("scroll_diff").get("values").length % SCROLL_CHECK_INTERVAL === 0 && scroll_data.get("scroll_diff").get("values") !== 0 && is_same_reel_for_reel_check_interval ==false){
 
-        // console.log("sybau 5 reals pass and u still like this??")
 
         const session_classification = scroll_data.get("scroll_diff").get("classification").reduce((a, b) => a + b, 0)/scroll_data.get("scroll_diff").get("classification").length
         if (!session_classification) {
-            // console.log("sybau idkwhat is t", scroll_data.get("scroll_diff").get("classification"))
             // console.log("sybau not found session classification ")
         }
         // overlay_function("TEST", session_classification)    ?
         is_same_reel_for_reel_check_interval = true
-        // console.log(scroll_data.get("scroll_time"), "sybau this is your total time")
     }
 
-    // ADD FUNCTIONALITY TODO SOMETHING LIKE CRASHING OUT
     if (!is_afk && scroll_data.get("scroll_time") >= MAX_SCROLL_TIME) {
-        // console.log("sybau current session dies") // maybe rip of the webs or so, or like damaging the html and sort of that or not just like force refresh or go to home page or just run TOTR
         overlay_function("MAX_TIME")
     }
 }
@@ -344,19 +291,14 @@ function overlay_function(type, data =null) {
                 type: "close"
             })
         } else if (type == "INTERVAL") {
-            // alert("Hello! This is a popup.");
-            console.log("sybau popup test")
-            console.log("sybau test",  data)
-            if(data[0] <3) { //check here somethings is wrong
+
+            if(data[0] <3) { 
                 window.showPopup({
                     title_desc: "You're scrolling too fast!",
                     body: "For the past " + data[1] + " reels averaging of " + (data[0]).toFixed(1) + " seconds per reel. Target time is 6 seconds for each reels."
                 })}
-                console.log("sybau should opening now")
         } else if (type == "TEST") { //deprecated
             if (data < 3) {
-                // alert("You're scrolling too fast for the past " + SCROLL_CHECK_INTERVAL + " reels! Averaging of " + (data).toFixed(1) + " seconds per reel. Target time is 6 seconds for each reels.");
-                // console.log("sybau test 1")
                 window.showPopup({
                     title_desc: "You're scrolling too fast!",   
                     body: "For the past " + SCROLL_CHECK_INTERVAL + " reels averaging of " + (data).toFixed(1) + " seconds per reel. Target time is 6 seconds for each reels."
