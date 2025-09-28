@@ -4,17 +4,20 @@
     "description": "Break your doomscrooling habits",
     "version": "0.0.1",
     
-    "permissions": ["tabs", "contextMenus", "clipboardWrite", "activeTab"],
+    "permissions": ["tabs", "contextMenus", "activeTab", "notifications"],
     
     "browser_specific_settings": {
       "gecko": {
         "id": "sp@Spost.com"
       }
     },
+    "background": {
+      "scripts": ["background.js"]
+    },
     "content_scripts": [
       {
           "matches": ["*://*.instagram.com/*"],
-          "js": ["content.js", "scroll.js", "app.js"]
+          "js": ["content.js", "scroll.js", "app.js", "popup.js"]
       }
     ]
   }

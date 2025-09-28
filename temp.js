@@ -1,30 +1,25 @@
-divs.forEach(div => {
-  if (div.hasAttribute("data-pagelet")) {
-    console.log("Found div with pagelet:", div);
-  }
-});
+let x = [1,2,3,4,5,6,7,8,9,10]
+let y = 10
 
-''
-const foundDivs = document.querySelectorAll("div[data-pagelet]");
+// console.log(x/y)
+// console.log(toString(x.reduce))
+// console.log(x.reduce((a, b) => a + b, 0)/x.length)
 
-if (foundDivs.length > 0) {
-  console.log(`Found ${foundDivs.length} div(s) with data-pagelet:`);
-  foundDivs.forEach(div => 
-    console.log(div.getAttribute("data-pagelet"), div)
-  );
-} else {
-  console.log("No divs with data-pagelet found.");
+if (x.length % 5==0) {
+  console.log("tes")
 }
 
+// const data = new Map(
+  // []
+// );/
 
-main page:
-story_tray
-IGDChatTabsRootContent
-
-explore:
-IGDChatTabsRootContent
-
-reels:
-IGDChatTabsRootContent
-
-
+const data = new Map([
+  ["scroll_time", 0],
+  ["scroll_diff", new Map(
+    [
+      ["values", []],
+      ["classification", []],
+      ["at", []]
+    ]
+  )]
+])
