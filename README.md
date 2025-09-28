@@ -1,7 +1,7 @@
 # ![Demo image](./icons/16x16.png) Spost  
 ## A break to your scrolling dopamine  
 
-Spost is a Firefox extension that helps you control your scrolling habits.  
+Spost is a Firefox extension that helps you control your scrolling habits in **Instagram reels**.  
 It’s not just another timer app, it detects how much time you spend on each reel and classifies it into categories like too fast, quite fast, or perfect for maintaining a healthy attention span.  
 
 ![Demo image](./src/images_1.png)
