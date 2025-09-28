@@ -1,4 +1,42 @@
 let popupCreated = false;
+let is_counting_down = false;
+let is_continue_counting = false;
+// let is_cross_counting = false;
+
+function enableButtons() {
+    document.getElementById("cancel").style.pointerEvents = 'auto';
+    document.getElementById("confirm").style.pointerEvents = 'auto';
+    document.getElementById("close").style.pointerEvents = 'auto';
+    document.getElementById("cancel").style.opacity = '1';
+    document.getElementById("confirm").style.opacity = '1';
+    document.getElementById("close").style.opacity = '1';
+}
+
+function countdown() {
+    if (is_continue_counting) return;
+        is_continue_counting = true;
+        let TIMER_CLOSE = 5;
+        document.getElementById("modal-body-text").textContent = TIMER_CLOSE + " seconds left before you can continue.";
+        TIMER_CLOSE--;
+        document.getElementById("cancel").style.pointerEvents = 'none';
+        document.getElementById("confirm").style.pointerEvents = 'none';
+        document.getElementById("close").style.pointerEvents = 'none';
+        document.getElementById("cancel").style.opacity = '0.5';
+        document.getElementById("confirm").style.opacity = '0.5';
+        document.getElementById("close").style.opacity = '0.5';
+        const interval = setInterval(() => {
+            document.getElementById("modal-body-text").textContent = TIMER_CLOSE + " seconds left before you can continue.";
+             TIMER_CLOSE--;
+            if (TIMER_CLOSE < 0) {
+                clearInterval(interval);
+                enableButtons();
+                document.getElementById('popup').classList.remove('visible');
+                is_continue_counting = false;
+                TIMER_CLOSE=5
+                // browser.runtime.sendMessage({ action: "closeTab" });s
+            }
+        }, 1000);
+    }
 
 window.showPopup = function({title, title_desc, body, type}={}) {
     if (!popupCreated) {
@@ -141,51 +179,55 @@ window.showPopup = function({title, title_desc, body, type}={}) {
         const closeBtn = document.getElementById('close');
         const continueBtn = document.getElementById('cancel');
         const closeAppBtn = document.getElementById('confirm');
-        closeBtn.addEventListener('click', () => popup.classList.remove('visible'));
+        closeBtn.addEventListener('click', () => countdown());
         continueBtn.addEventListener('click', () => {
-            let TIMER_CLOSE = 5;
-            document.getElementById("modal-body-text").textContent = TIMER_CLOSE + " seconds left before you can continue.";
-            TIMER_CLOSE--;
-            document.getElementById("cancel").style.pointerEvents = 'none';
-            document.getElementById("confirm").style.pointerEvents = 'none';
-            document.getElementById("close").style.pointerEvents = 'none';
-            document.getElementById("cancel").style.opacity = '0.5';
-            document.getElementById("confirm").style.opacity = '0.5';
-            document.getElementById("close").style.opacity = '0.5';
-            const interval = setInterval(() => {
-                document.getElementById("modal-body-text").textContent = TIMER_CLOSE + " seconds left before you can continue.";
-                TIMER_CLOSE--;
-                if (TIMER_CLOSE < 0) {
-                    clearInterval(interval);
-                    popup.classList.remove('visible');
-                    TIMER_CLOSE=5
-                    // browser.runtime.sendMessage({ action: "closeTab" });s
-                }
-            }, 1000);
+            countdown()
+            // enableButtons();
+            // if (is_continue_counting) return;
+            // is_continue_counting = true;
+            // let TIMER_CLOSE = 5;
+            // document.getElementById("modal-body-text").textContent = TIMER_CLOSE + " seconds left before you can continue.";
+            // TIMER_CLOSE--;
+            // document.getElementById("cancel").style.pointerEvents = 'none';
+            // document.getElementById("confirm").style.pointerEvents = 'none';
+            // document.getElementById("close").style.pointerEvents = 'none';
+            // document.getElementById("cancel").style.opacity = '0.5';
+            // document.getElementById("confirm").style.opacity = '0.5';
+            // document.getElementById("close").style.opacity = '0.5';
+            // const interval = setInterval(() => {
+            //     document.getElementById("modal-body-text").textContent = TIMER_CLOSE + " seconds left before you can continue.";
+            //     TIMER_CLOSE--;
+            //     if (TIMER_CLOSE < 0) {
+            //         clearInterval(interval);
+            //         enableButtons();
+            //         popup.classList.remove('visible');
+            //         is_continue_counting = false;
+            //         TIMER_CLOSE=5
+            //         // browser.runtime.sendMessage({ action: "closeTab" });s
+            //     }
+            // }, 1000);
         });
 
         closeAppBtn.addEventListener('click', () => {
+            enableButtons();
             popup.classList.remove('visible');
             browser.runtime.sendMessage({ action: "closeTab" });
-        });
-
-        
-
-        popup.addEventListener('click', e => {
-            if (e.target === popup) popup.classList.remove('visible');
         });
 
         popupCreated = true;
     }
     if (type === "close") {
+        if (is_counting_down) return;
+        is_counting_down = true;
         document.getElementById("cancel").style.pointerEvents = 'none';
         document.getElementById("confirm").style.pointerEvents = 'none';
         document.getElementById("close").style.pointerEvents = 'none';
         document.getElementById("cancel").style.opacity = '0.5';
         document.getElementById("confirm").style.opacity = '0.5';
         document.getElementById("close").style.opacity = '0.5';
-        chrome.tabs.getCurrent().then(tab => {
-            const tabId = tab.id;
+        document.getElementById("modal-body-text").textContent = "Preparing to close tab...";
+        browser.runtime.sendMessage({ action: "getTabId" }).then(response => {
+            const tabId = response.tabId;
             let timer = 5;
             document.getElementById("modal-body-text").textContent = timer + " seconds left before automatically close tab.";
             timer--;
@@ -194,8 +236,9 @@ window.showPopup = function({title, title_desc, body, type}={}) {
                 timer--;
                 if (timer < 0) {
                     clearInterval(interval);
+                    enableButtons();
                     document.getElementById('popup').classList.remove('visible');
-                    timer = 5
+                    is_counting_down = false;
                     browser.runtime.sendMessage({ action: "closeTab", tabId });
                 }
             }, 1000);
@@ -206,6 +249,7 @@ window.showPopup = function({title, title_desc, body, type}={}) {
 
     if (type !== "close") {
         document.getElementById("modal-body-text").textContent = body;
+        enableButtons();
     }
     document.getElementById('popup').classList.add('visible');
 }

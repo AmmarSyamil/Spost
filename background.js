@@ -1,5 +1,7 @@
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "closeTab") {
+  if (message.action === "getTabId") {
+    sendResponse({ tabId: sender.tab.id });
+  } else if (message.action === "closeTab") {
     const tabId = message.tabId;
     if (tabId) {
       browser.tabs.remove(tabId);

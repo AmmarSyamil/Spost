@@ -1,6 +1,13 @@
-                const data = document
+const data = document
 
-
+// Configurable stuff!
+const MAX_SCROLL_TIME = 5 // Total time per session before self destruct, in minutes
+const CHECK_SCROLL_DIFF_INTERVAL = 2 // Time interval to check scroll diff, in minutes
+const SCROLL_CHECK_INTERVAL = 5 // Deprecated
+const DIFF_REALLY_BAD = 3000 // Classification threshold for really bad (ms)
+const DIFF_KINDA_BAD = 6000 // Classification threshold for kinda bad (ms)
+const AFK_THRESHOLD = 60 // AFK detection threshold in seconds
+const DEBOUNCE_MS = 500 // Debounce for reel change detection (ms)
 
 function scroll_home(data = document) {
     const check_scroll_home = new MutationObserver(mutations => {
@@ -54,7 +61,6 @@ function scroll_reels(data = document) {
     let pollInterval = null;
     let lastMiddle = null;
     let lastMiddleChangeTime = 0;
-    const DEBOUNCE_MS = 500;
 
     function getSrc(el) {
         return (el && (el.getAttribute("src") || el.src || "") || "").trim();
@@ -95,7 +101,9 @@ function scroll_reels(data = document) {
 
 
     function detectMiddleScroll() {
-        if (!is_afk) scroll_data.set("scroll_time", ((Date.now() - initial_open.getTime()) / 1000 / 60).toFixed(2));
+        if (is_afk) return;
+
+        scroll_data.set("scroll_time", ((Date.now() - initial_open.getTime() - total_afk_time) / 1000 / 60).toFixed(2));
 
 
         const middle = getMiddleReel();
@@ -181,20 +189,17 @@ console.log("run sybau");
 const tes = scroll_reels(document);
 
 let previus_scroll = new Date();
-// let current_scroll = null
+let current_scroll = new Date();
+let temp_scroll = null
 // let all_scroll = [];
 let all_scroll_diff = [];
 let all_diff_classification = [];
 let is_first_reel = true;
 let is_afk = false
 let is_same_reel_for_reel_check_interval = false
-const MAX_SCROLL_TIME = 5
-const CHECK_SCROLL_DIFF_INTERVAL = 2    
-const SCROLL_CHECK_INTERVAL = 5
 let last_interval_minute = null;
-// Diff classification
-const diff_really_bad =  3000 //1
-const diff_kinda_bad = 6000 //2
+let total_afk_time = 0;
+let afk_start = null;
 
 
 function actualy_usecase() {
@@ -206,7 +211,8 @@ function actualy_usecase() {
     } 
 
     try {
-        const current_scroll = new Date();
+        if (!is_afk) {
+        current_scroll = new Date();
         const diff_scroll = Math.abs(current_scroll.getTime() - previus_scroll.getTime())
 
 
@@ -215,20 +221,16 @@ function actualy_usecase() {
 
         all_scroll_diff.push(diff_scroll);
 
-        if (diff_scroll <= diff_really_bad) {
+        if (diff_scroll <= DIFF_REALLY_BAD) {
             const current_diff_classification = 1;
-            // console.log("sybau level 1 ", diff_scroll)
             scroll_data.get("scroll_diff").get("classification").push(current_diff_classification)
-            
             all_diff_classification.push(current_diff_classification)
-        } if (diff_scroll <= diff_kinda_bad){
-            const current_diff_classification = 2            
+        } else if (diff_scroll <= DIFF_KINDA_BAD){
+            const current_diff_classification = 2
             scroll_data.get("scroll_diff").get("classification").push(current_diff_classification)
-            // console.log("sybau level 2", diff_scroll)
             all_diff_classification.push(current_diff_classification)
         } else {
             const current_diff_classification = 3
-            // console.log("sybau level 3", diff_scroll)
             scroll_data.get("scroll_diff").get("classification").push(current_diff_classification)
             all_diff_classification.push(current_diff_classification)
         }
@@ -243,13 +245,36 @@ function actualy_usecase() {
         
         // console.log(scroll_data.get("scroll_time"), "tes tes sybau")
         
-        previus_scroll = current_scroll
+        previus_scroll = current_scroll}
     }catch (error) {console.error("sybau errror", error)}
 }
 
 
 function actualy_usecase_always() {
-    const current_scroll = new Date();
+    // AFK logic first
+    if (!is_afk) current_scroll = new Date();
+    try {
+        if (scroll_data.get("scroll_diff").get("at").length>=1) {
+        const raw_data = scroll_data.get("scroll_diff").get("at")[scroll_data.get("scroll_diff").get("at").length - 1];
+        const new_data = (new Date().getTime() - raw_data.getTime()) / 1000;
+
+        if (is_afk) {console.log(new_data, "sybaus")}
+        const was_afk = is_afk;
+        is_afk = new_data >= AFK_THRESHOLD;
+        if (is_afk && !was_afk) {
+            afk_start = new Date();
+            current_scroll = new Date();
+        }
+        if (!is_afk && was_afk) {
+            total_afk_time += new Date() - afk_start;
+            afk_start = null;
+        }
+    }
+    } catch (error) {console.log(error, "sybau error")}
+
+    if (is_afk) return;
+
+    // current_scroll = new Date();
     const scroll_time_minutes = Math.floor(scroll_data.get("scroll_time"));
     // console.log(scroll_time_minutes, "sybau here idk ")
     if (scroll_time_minutes %CHECK_SCROLL_DIFF_INTERVAL ===0 && scroll_time_minutes !== 0 && last_interval_minute !== scroll_time_minutes) {
@@ -262,7 +287,7 @@ function actualy_usecase_always() {
         if (indices_time_data.length > 0) {
             const last_window_data = indices_time_data.map(idx => scroll_data.get("scroll_diff").get("classification")[idx]);
             const avg_last_window_data = last_window_data.reduce((a, b) => a + b, 0) / last_window_data.length;
-                
+            console.log(avg_last_window_data, "sybau")
             // FUNCTION HERE TODO SOMETHINGS
             // console.log(avg_last_window_data, "sybau heres your alst 5 minutes data")
             // console.log(last_window_data, "sybau heres your idk what isit")
@@ -273,7 +298,7 @@ function actualy_usecase_always() {
             } else {
                 // console.log("good good sybau")
             }
-            overlay_function("INTERVAL", [avg_last_window_data, indices_time_data.length])
+            if (!is_afk) overlay_function("INTERVAL", [avg_last_window_data, indices_time_data.length])
         }
         last_interval_minute = scroll_time_minutes
         }
@@ -281,39 +306,13 @@ function actualy_usecase_always() {
     // if (scroll_data.get("scroll_time")/60 % 5 ==0 && scroll_data.get("scroll_time") != 0) {
     //     console.log("stop niga ur brainroted")
     // }
-    
-    // NO NEED TODO ANY FUNCITON, LOG IS ENOUGH
-    // if (current_scroll.getSeconds() - previus_scroll.getSeconds() >= 30 && is_afk ==false) {
-    //     console.log("AFK sybau")
-    //     is_afk = true
-    //     return
-    // } else {
-    //     is_afk = false
-    // }
-    
-    //stronger get afk
-    try {
-        // const atArr = scroll_data.get("scroll_diff").get("at");
-        if (scroll_data.get("scroll_diff").get("at").length>=1) {
-        const raw_data = scroll_data.get("scroll_diff").get("at")[scroll_data.get("scroll_diff").get("at").length - 1];
-        const new_data = (current_scroll.getTime() - raw_data.getTime()) / 1000;
-
-        if (new_data >= 10 && is_afk==false) {
-            is_afk = true
-            return
-        } else {
-            is_afk =false
-        }
-    }
-    } catch (error) {console.log(error, "sybau error")}
 
     // scroll_data.get("scroll_diff").get("values").length
     // i dont think this is imprtant, like nig, so no need a functio for functionality
     if (scroll_data.get("scroll_diff").get("values").length % SCROLL_CHECK_INTERVAL === 0 && scroll_data.get("scroll_diff").get("values") !== 0 && is_same_reel_for_reel_check_interval ==false){
-            
+
         // console.log("sybau 5 reals pass and u still like this??")
 
-        
         const session_classification = scroll_data.get("scroll_diff").get("classification").reduce((a, b) => a + b, 0)/scroll_data.get("scroll_diff").get("classification").length
         if (!session_classification) {
             // console.log("sybau idkwhat is t", scroll_data.get("scroll_diff").get("classification"))
@@ -323,9 +322,9 @@ function actualy_usecase_always() {
         is_same_reel_for_reel_check_interval = true
         // console.log(scroll_data.get("scroll_time"), "sybau this is your total time")
     }
-     
+
     // ADD FUNCTIONALITY TODO SOMETHING LIKE CRASHING OUT
-    if (scroll_data.get("scroll_time") >= MAX_SCROLL_TIME) {
+    if (!is_afk && scroll_data.get("scroll_time") >= MAX_SCROLL_TIME) {
         // console.log("sybau current session dies") // maybe rip of the webs or so, or like damaging the html and sort of that or not just like force refresh or go to home page or just run TOTR
         overlay_function("MAX_TIME")
     }
@@ -354,7 +353,7 @@ function overlay_function(type, data =null) {
                     body: "For the past " + data[1] + " reels averaging of " + (data[0]).toFixed(1) + " seconds per reel. Target time is 6 seconds for each reels."
                 })}
                 console.log("sybau should opening now")
-        } else if (type == "TEST") {
+        } else if (type == "TEST") { //deprecated
             if (data < 3) {
                 // alert("You're scrolling too fast for the past " + SCROLL_CHECK_INTERVAL + " reels! Averaging of " + (data).toFixed(1) + " seconds per reel. Target time is 6 seconds for each reels.");
                 // console.log("sybau test 1")
