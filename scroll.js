@@ -1,8 +1,8 @@
 const data = document
 console.log("Spost run")
 // Configurable stuff!
-const MAX_SCROLL_TIME = 5 // Total time per session before self destruct, in minutes
-const CHECK_SCROLL_DIFF_INTERVAL = 2 // Time interval to check scroll diff, in minutes
+const MAX_SCROLL_TIME = 25 // Total time per session before self destruct, in minutes
+const CHECK_SCROLL_DIFF_INTERVAL = 10 // Time interval to check scroll diff, in minutes
 const SCROLL_CHECK_INTERVAL = 5 // Deprecated
 const DIFF_REALLY_BAD = 3000 // Classification threshold for really bad (ms)
 const DIFF_KINDA_BAD = 6000 // Classification threshold for kinda bad (ms)
