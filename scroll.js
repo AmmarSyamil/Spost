@@ -1,4 +1,4 @@
-const data = document
+                const data = document
 
 
 
@@ -296,18 +296,15 @@ function actualy_usecase_always() {
         // const atArr = scroll_data.get("scroll_diff").get("at");
         if (scroll_data.get("scroll_diff").get("at").length>=1) {
         const raw_data = scroll_data.get("scroll_diff").get("at")[scroll_data.get("scroll_diff").get("at").length - 1];
-        // const new_data = (raw_data instanceof Date) ? raw_data : new Date(raw_data);
-        // console.log(raw_data, "sybau tes    ")
-        const new_data = current_scroll.getSeconds() - raw_data.getSeconds()
-        // console.log(new_data, "sybau tes 2")
+        const new_data = (current_scroll.getTime() - raw_data.getTime()) / 1000;
 
         if (new_data >= 10 && is_afk==false) {
-            // console.log("AFK sybau version 2")
             is_afk = true
             return
         } else {
             is_afk =false
-        }}
+        }
+    }
     } catch (error) {console.log(error, "sybau error")}
 
     // scroll_data.get("scroll_diff").get("values").length
@@ -351,7 +348,7 @@ function overlay_function(type, data =null) {
             // alert("Hello! This is a popup.");
             console.log("sybau popup test")
             console.log("sybau test",  data)
-            if(data[0]) { //check here somethings is wrong
+            if(data[0] <3) { //check here somethings is wrong
                 window.showPopup({
                     title_desc: "You're scrolling too fast!",
                     body: "For the past " + data[1] + " reels averaging of " + (data[0]).toFixed(1) + " seconds per reel. Target time is 6 seconds for each reels."

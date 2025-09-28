@@ -3,7 +3,7 @@ let popupCreated = false;
 window.showPopup = function({title, title_desc, body, type}={}) {
     if (!popupCreated) {
         const popupHTML = `
-        <div class="popup" id="popup">
+        <div class="backdrop" id="popup">
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
             <div class="modal-header">
             <div>
@@ -25,8 +25,10 @@ window.showPopup = function({title, title_desc, body, type}={}) {
             </div>
         </div>
         </div>
+        `;
 
-        <style>
+        const style = document.createElement('style');
+        style.textContent = `
         .backdrop {
             position: fixed; inset: 0; display: none;
             align-items: center; justify-content: center;
@@ -34,8 +36,8 @@ window.showPopup = function({title, title_desc, body, type}={}) {
             background: rgba(0,0,0,0.35);
             z-index: 1200; padding: 20px;
         }
-            .backdrop.visible { 
-            display: flex; 
+            .backdrop.visible {
+            display: flex;
         }
 
         .modal {
@@ -49,20 +51,20 @@ window.showPopup = function({title, title_desc, body, type}={}) {
             display: flex; flex-direction: column; gap: 14px;
         }
 
-        .modal-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
-        
-        .title { 
-            color: #fff0f6;
-            font-weight: 700; 
-            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
-            
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .subtitle { 
+        .title {
+            color: #fff0f6;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+
+        }
+
+        .subtitle {
             font-size: 13px;
             /* color: #ffd6e9;  */
             /* color: #9fb0c8;  */
@@ -70,24 +72,24 @@ window.showPopup = function({title, title_desc, body, type}={}) {
             text-shadow: 0 1px 2px rgba(0,0,0,0.4);
         }
 
-        .modal-body { 
-            font-size: 14px; 
-            color: #cbd5e1; 
+        .modal-body {
+            font-size: 14px;
+            color: #cbd5e1;
             text-shadow: 0 1px 2px rgba(0,0,0,0.4);
         }
 
-        .modal-actions { 
-            display: flex; 
-            gap: 10px; 
-            justify-content: flex-end; 
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
         }
 
         .ghost {
-            background: transparent; 
+            background: transparent;
             border: 1px solid rgba(255,182,193,0.75);
-            padding: 8px 14px; 
-            border-radius: 8px; 
-            cursor: pointer; 
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
             color: #ffe6f1;
             font-weight: 500;
             transition: all 0.2s ease;
@@ -100,10 +102,10 @@ window.showPopup = function({title, title_desc, body, type}={}) {
         }
         .primary {
             background: linear-gradient(90deg,#ec4899,#d955f7);
-            color: white; 
-            border: 0; 
-            padding: 9px 16px; 
-            border-radius: 8px; 
+            color: white;
+            border: 0;
+            padding: 9px 16px;
+            border-radius: 8px;
             cursor: pointer;
             box-shadow: 0 3px 10px rgba(236, 72, 153, 0.35);
             transition: all 0.25s ease;
@@ -117,19 +119,19 @@ window.showPopup = function({title, title_desc, body, type}={}) {
         }
         .icon-btn {
             background: transparent; border: 0; cursor: pointer; color: #9fb0c8;
-            width: 32px; 
-            height: 32px; 
+            width: 32px;
+            height: 32px;
             border-radius: 8px;
-            display: flex; 
+            display: flex;
             align-items: center; justify-content: center;
             transition: all 0.1s ease;
         }
-        .icon-btn:hover { 
-            background: rgba(255, 182, 193, 0.15); 
-            color: white; 
+        .icon-btn:hover {
+            background: rgba(255, 182, 193, 0.15);
+            color: white;
         }
-        </style>
         `;
+        document.head.appendChild(style);
 
         const div = document.createElement('div');
         div.innerHTML = popupHTML;
@@ -156,6 +158,7 @@ window.showPopup = function({title, title_desc, body, type}={}) {
                 if (TIMER_CLOSE < 0) {
                     clearInterval(interval);
                     popup.classList.remove('visible');
+                    TIMER_CLOSE=5
                     // browser.runtime.sendMessage({ action: "closeTab" });s
                 }
             }, 1000);
@@ -181,24 +184,27 @@ window.showPopup = function({title, title_desc, body, type}={}) {
         document.getElementById("cancel").style.opacity = '0.5';
         document.getElementById("confirm").style.opacity = '0.5';
         document.getElementById("close").style.opacity = '0.5';
-        let timer = 5;
-        document.getElementById("modal-body-text").textContent = timer + " seconds left before automatically close tab.";
-        timer--;
-        const interval = setInterval(() => {
+        chrome.tabs.getCurrent().then(tab => {
+            const tabId = tab.id;
+            let timer = 5;
             document.getElementById("modal-body-text").textContent = timer + " seconds left before automatically close tab.";
             timer--;
-            if (timer < 0) {
-                clearInterval(interval);
-                document.getElementById('popup').classList.remove('visible');
-                browser.runtime.sendMessage({ action: "closeTab" });
-            }
-        }, 1000);
+            const interval = setInterval(() => {
+                document.getElementById("modal-body-text").textContent = timer + " seconds left before automatically close tab.";
+                timer--;
+                if (timer < 0) {
+                    clearInterval(interval);
+                    document.getElementById('popup').classList.remove('visible');
+                    timer = 5
+                    browser.runtime.sendMessage({ action: "closeTab", tabId });
+                }
+            }, 1000);
+        });
     }
     if (!title) {document.getElementById("modal-title").textContent = "Spost checker here";} else {document.getElementById("modal-title").textContent = title;};
     document.getElementById("modal-desc").textContent = title_desc;
 
     if (type !== "close") {
-        
         document.getElementById("modal-body-text").textContent = body;
     }
     document.getElementById('popup').classList.add('visible');

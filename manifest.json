@@ -1,22 +1,17 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
     "name": "Spost",
     "description": "Break your doomscrooling habits",
     "version": "0.0.1",
-    
+
     "permissions": ["tabs", "contextMenus", "activeTab", "notifications"],
-    
-    "browser_specific_settings": {
-      "gecko": {
-        "id": "sp@Spost.com"
-      }
-    },
+
     "background": {
       "scripts": ["background.js"]
     },
     "content_scripts": [
       {
-          "matches": ["*://*.instagram.com/*"],
+          "matches": ["*://*.instagram.com/reels/*"],
           "js": ["content.js", "scroll.js", "app.js", "popup.js"]
       }
     ]
