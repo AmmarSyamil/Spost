@@ -108,7 +108,7 @@ function scroll_reels(data = document) {
 
         const middle = getMiddleReel();
         if (!middle) {
-            // console.log("cant find middle scrren sybau")
+            console.log("Spost cant find middle scrren")
         };
         const y = middle.getBoundingClientRect().top || 0;
         const now = Date.now();

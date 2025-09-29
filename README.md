@@ -12,11 +12,23 @@ Like other productivity tools, it also includes a session time limit, once reach
 
 
 ## Features  
+<video src="https://hc-cdn.hel1.your-objectstorage.com/s/v3/2f59acf4c02ddca3187506b5e4158d1e9c1e3e99_spost_demo.mp4" controls></video>
 - Reels engagement classification to measure and maintain your attention span  
 - Popup warnings when scrolling too fast in a given time.
 - Forced tab close when the max session time is exceeded. 
 
+## installation 
+*note: I use Zen browser here, which based on Firefox.
+<video src="https://hc-cdn.hel1.your-objectstorage.com/s/v3/101a7d5e1265044ce202206e10388a6709c0e2e7_spost_instalation_guide.mp4" controls></video>
 
+1. Open up [Spost github page](https://github.com/AmmarSyamil/Spost). 
+2. Install zip file inside the **zip_file** folder.
+3. Extract that zip file.
+4. In Firefox, open page **about:debugging** from the search bar.
+5. In menu bar on left, go to **This {browser}** tab.
+6. Click the **Temporary Extentions** and click the **Load Temporary Add-on...** button.
+7. It will open up file folder and go search for your extracted zip file and load the **manifest.json** file.
+8. Done!
 
 ## Made With  
 - JavaScript  
