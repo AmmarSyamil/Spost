@@ -12,14 +12,14 @@ Like other productivity tools, it also includes a session time limit, once reach
 
 
 ## Features
-<video src="./videos/spost_demo.mp4" controls></video>
+[Demo Video](https://hc-cdn.hel1.your-objectstorage.com/s/v3/2f59acf4c02ddca3187506b5e4158d1e9c1e3e99_spost_demo.mp4)
 - Reels engagement classification to measure and maintain your attention span  
 - Popup warnings when scrolling too fast in a given time.
 - Forced tab close when the max session time is exceeded. 
 
 ## installation
 *note: I use Zen browser here, which based on Firefox.
-<video src="./videos/spost_installation_guide.mp4" controls></video>
+[installation Video](https://hc-cdn.hel1.your-objectstorage.com/s/v3/101a7d5e1265044ce202206e10388a6709c0e2e7_spost_instalation_guide.mp4)
 
 1. Open up [Spost github page](https://github.com/AmmarSyamil/Spost). 
 2. Install zip file inside the **zip_file** folder.
