@@ -2,7 +2,7 @@
 /**
  * scripts/build-shared.js
  *
- * Copies src/ -> build/chrome and build/firefox, then writes the right manifest.json
+ * Copies src/ -> build/chrome/Spost and build/firefox/Spost, writes the right manifest.json, and creates zip files
  * Usage: node scripts/build-shared.js
  *
  * Notes:
@@ -18,6 +18,7 @@
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
+const archiver = require('archiver');
 
 const stat = promisify(fs.stat);
 const mkdir = promisify(fs.mkdir);
@@ -89,9 +90,23 @@ async function copyRecursive(src, dest) {
   }
 }
 
+async function zipDirectory(sourceDir, outPath) {
+  const output = fs.createWriteStream(outPath);
+  const archive = archiver('zip', { zlib: { level: 9 } });
+
+  return new Promise((resolve, reject) => {
+    output.on('close', () => resolve());
+    archive.on('error', reject);
+    archive.pipe(output);
+    archive.directory(sourceDir, false);
+    archive.finalize();
+  });
+}
+
 async function buildTarget(targetName, manifestFile) {
-  const targetDir = path.join(BUILD, targetName);
-  await rimraf(targetDir).catch(() => {});
+  const targetParentDir = path.join(BUILD, targetName);
+  const targetDir = path.join(targetParentDir, 'Spost');
+  await rimraf(targetParentDir).catch(() => {});
   await ensureDir(targetDir);
 
   await copyRecursive(SRC, targetDir);
@@ -107,6 +122,10 @@ async function buildTarget(targetName, manifestFile) {
   }
 
   console.log(`[build] ${targetName} built to ${targetDir}`);
+
+  const zipPath = path.join(targetParentDir, `${targetName}.zip`);
+  await zipDirectory(targetDir, zipPath);
+  console.log(`[build] ${targetName} zipped to ${zipPath}`);
 }
 
 async function main() {
