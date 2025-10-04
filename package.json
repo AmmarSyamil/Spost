@@ -1,0 +1,7 @@
+{
+"scripts": {
+  "build:shared": "node scripts/build-shared.js",
+  "build:chrome": "npm run build:shared && cp manifests/manifest.chrome.json build/chrome/manifest.json && cd build/chrome && zip -r ../../chrome-extension.zip .",
+  "build:firefox": "npm run build:shared && cp manifests/manifest.firefox.json build/firefox/manifest.json && cd build/firefox && zip -r ../../firefox-extension.zip ."
+}
+}

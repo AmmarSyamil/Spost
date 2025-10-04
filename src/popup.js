@@ -1,3 +1,5 @@
+const browser = globalThis.browser || globalThis.chrome;
+
 let popupCreated = false;
 let is_counting_down = false;
 let is_continue_counting = false;
