@@ -21,11 +21,8 @@ Like other productivity tools, it also includes a session time limit, once reach
 
 **Firefox installation:**
 
-[installation Video](https://hc-cdn.hel1.your-objectstorage.com/s/v3/101a7d5e1265044ce202206e10388a6709c0e2e7_spost_instalation_guide.mp4)
-*note: I use Zen browser here.*
-
-1. Open up [Spost github page](https://github.com/AmmarSyamil/Spost). 
-2. Install zip file inside the **zip_file** folder.
+1. Open up [Spost FireFox setup](https://github.com/AmmarSyamil/Spost/tree/main/build/firefox). 
+2. Install zip file.
 3. Extract that zip file.
 4. In Firefox, open page **about:debugging** from the search bar.
 5. In menu bar on left, go to **This {browser}** tab.
@@ -37,17 +34,12 @@ Like other productivity tools, it also includes a session time limit, once reach
 
 **Chrome installation:**
 
-[installation Video](https://hc-cdn.hel1.your-objectstorage.com/s/v3/101a7d5e1265044ce202206e10388a6709c0e2e7_spost_instalation_guide.mp4)
-*note: I use Zen browser here.*
-
-1. Open up [Spost github page](https://github.com/AmmarSyamil/Spost). 
+1. Open up [Spost Chrome setup](https://github.com/AmmarSyamil/Spost/tree/main/build/chrome). 
 2. Install zip file inside the **zip_file** folder.
 3. Extract that zip file.
-4. In Firefox, open page **about:debugging** from the search bar.
-5. In menu bar on left, go to **This {browser}** tab.
-6. Click the **Temporary Extentions** and click the **Load Temporary Add-on...** button.
-7. It will open up file folder and go search for your extracted zip file and load the **manifest.json** file.
-8. Done! You can check the console log for "Spost run" to make sure its working. 
+4. In Chrome, click the 3 dot in top right corner, then click the **Extentions** part, then click the **Manage Extentions**.
+5. In top left corner of the web, click the **Load unpacked** and input the extracted folder.
+6. Done! You can check the console log for "Spost run" to make sure its working. 
 
 ## Made With  
 - JavaScript  
